@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bangumi</title>
+        <link href="https://cdn.bootcss.com/vue-material/1.0.0-beta-8/vue-material.min.css" rel="stylesheet" />
+        <link href="https://cdn.bootcss.com/vue-material/1.0.0-beta-8/theme/default.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+        <link rel='stylesheet' href='/stylesheets/bangumi.css' />
+    </head>
+    <body>
+    <div id="app">
+        <div class="page-container">
+            <md-app md-mode="reveal">
+                <md-app-toolbar class="md-primary">
+                    <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
+                        <md-icon>menu</md-icon>
+                    </md-button>
+                    <span class="md-title">Bangumi</span>
+                </md-app-toolbar>
+                <md-app-drawer :md-active.sync="menuVisible" class="md-scrollbar">
+                    <md-toolbar class="md-transparent" md-elevation="0">Navigation</md-toolbar>
+
+                    <md-list>
+                        <md-list-item @click="page = 0">
+                            <md-icon>move_to_inbox</md-icon>
+                            <span class="md-list-item-text">番剧</span>
+                        </md-list-item>
+                        <md-list-item @click="page = 1">
+                            <md-icon>send</md-icon>
+                            <span class="md-list-item-text">用户</span>
+                        </md-list-item>
+                        <md-list-item>
+                            <md-icon>delete</md-icon>
+                            <span class="md-list-item-text">作者</span>
+                        </md-list-item>
+                    </md-list>
+                </md-app-drawer>
+                <md-app-content class="md-scrollbar">
+                    <div v-if="page === 0">
+                        <div>
+                            <input type="text" placeholder="mid" v-model="mid">
+                        </div>
+                        <div>
+                            <h2>{{ author.uname }}</h2>
+                            <div v-for="other in author.top_matches">
+                                <h3>{{ other.uname }}</h3>
+                            </div>
+                            <div v-for="anime in author.recommendation">
+                                <h3>{{ anime.title }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </md-app-content>
+            </md-app>
+        </div>
+    </div>
+        <script src="https://cdn.bootcss.com/vue/2.5.15/vue.min.js"></script>
+        <script src="https://cdn.bootcss.com/vue-resource/1.5.0/vue-resource.min.js"></script>
+        <script src="https://cdn.bootcss.com/vue-material/1.0.0-beta-8/vue-material.min.js"></script>
+        <script src="/javascripts/bangumi.js"></script>
+    </body>
+</html>
