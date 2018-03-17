@@ -6,3 +6,22 @@
     width: 230px;
     max-width: calc(100vw - 125px);
 }
+
+.md-layout.md-gutter>.md-layout-item {
+    padding: 0;
+}
+
+.md-app-content .md-card {
+    margin: 4px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.bangumi-content {
+    margin: 8px;
+    padding: 8px;
+}
+
+.bangumi-placeholder {
+    height: 512px;
+}
