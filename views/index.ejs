@@ -2,16 +2,16 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="theme-color" content="#448aff" />
         <title>Bangumi</title>
         <link href="https://cdn.bootcss.com/vue-material/1.0.0-beta-8/vue-material.min.css" rel="stylesheet" />
-        <link href="https://cdn.bootcss.com/vue-material/1.0.0-beta-8/theme/default.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+        <link href="https://cdn.bootcss.com/vue-material/1.0.0-beta-8/theme/default.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons" />
         <link rel='stylesheet' href='/stylesheets/bangumi.css' />
     </head>
     <body>
-    <div id="app">
+    <div id="app" style="visibility: hidden">
         <div class="page-container">
             <md-app md-mode="reveal" style="min-height: 100vh;">
                 <md-app-toolbar class="md-primary">
@@ -26,16 +26,16 @@
                     </md-toolbar>
 
                     <md-list>
-                        <md-list-item @click="page = 0">
-                            <md-icon>move_to_inbox</md-icon>
+                        <md-list-item @click="switchPage(0)">
+                            <md-icon>play_circle_filled</md-icon>
                             <span class="md-list-item-text">番剧</span>
                         </md-list-item>
-                        <md-list-item @click="page = 1">
-                            <md-icon>send</md-icon>
+                        <md-list-item @click="switchPage(1)">
+                            <md-icon>account_circle</md-icon>
                             <span class="md-list-item-text">用户</span>
                         </md-list-item>
-                        <md-list-item>
-                            <md-icon>delete</md-icon>
+                        <md-list-item @click="switchPage(2)">
+                            <md-icon>pets</md-icon>
                             <span class="md-list-item-text">作者</span>
                         </md-list-item>
                     </md-list>
@@ -48,7 +48,7 @@
                             <span class="md-helper-text">番剧编号</span>
                         </md-field>
                         <div v-if="anime.success">
-                            <div class="md-layout md-gutter">
+                            <div class="bangumi-content md-layout md-gutter md-alignment-center-space-between">
                                 <div class="bangumi-content">
                                     <span class="md-display-2">{{ anime.title }}</span>
                                     <div>
@@ -73,54 +73,131 @@
                                 </div>
                             </div>
                             <div class="bangumi-content md-layout md-gutter">
-                                <span>简介</span>
+                                <span class="md-title">简介</span>
                                 <p>{{ anime.evaluate }}</p>
                             </div>
-                            <div v-if="anime.top_matches" class="md-layout md-gutter md-alignment-top-center">
-                                <md-card md-with-hover v-for="other in anime.top_matches" class="md-layout-item md-medium-size-96 md-large-size-24">
-                                    <md-ripple>
-                                        <md-card-header>
-                                            <div class="md-title">{{ other.title }}</div>
-                                            <div v-if="other.rating" class="md-subhead">{{ other.rating.score }}</div>
-                                        </md-card-header>
+                            <div v-if="anime.top_matches" class="bangumi-content">
+                                <span class="md-title">相似作品</span>
+                                <div class="bangumi-content md-layout md-gutter md-alignment-top-center">
+                                    <md-card md-with-hover v-for="other in anime.top_matches" class="md-layout-item md-medium-size-96 md-large-size-24">
+                                        <md-ripple>
+                                            <md-card-header>
+                                                <div class="md-title">{{ other.title }}</div>
+                                                <div v-if="other.rating" class="md-subhead">{{ other.rating.score }}</div>
+                                            </md-card-header>
 
-                                        <md-card-content>
-                                            {{ other.evaluate | filter_slice }}
-                                        </md-card-content>
+                                            <md-card-content>{{ other.evaluate | filter_slice }}</md-card-content>
 
-                                        <md-card-actions>
-                                            <md-button @click="applyAnime(other.season_id)">查看详情</md-button>
-                                        </md-card-actions>
-                                    </md-ripple>
-                                </md-card>
+                                            <md-card-actions>
+                                                <md-button @click="applyAnime(other.season_id)">查看番剧</md-button>
+                                            </md-card-actions>
+                                        </md-ripple>
+                                    </md-card>
+                                </div>
                             </div>
                         </div>
-                        <div v-else class="bangumi-placeholder"></div>
                     </div>
 
                     <div v-if="page === 1" class="md-layout md-gutter">
                         <md-field>
                             <label>MID</label>
-                            <md-input v-model="season_id"></md-input>
+                            <md-input v-model="mid"></md-input>
                             <span class="md-helper-text">用户编号</span>
                         </md-field>
-                        <div v-if="author.success" class="md-layout md-gutter">
+                        <div v-if="author.success">
+                            <div class="bangumi-content md-layout md-gutter md-alignment-center-space-between">
+                                <div class="bangumi-content">
+                                    <span class="md-display-2">{{ author.uname }}</span>
+                                </div>
+                                <div class="bangumi-content">
+                                    <span>最后爬取时间：{{ author.last_crawl }}</span>
+                                    <span>最后计算时间：{{ author.last_analyze }}</span>
+                                </div>
+                            </div>
+                            <div class="bangumi-content">
+                                <span class="md-title">用户评论</span>
+                                <div class="bangumi-content md-layout md-gutter md-alignment-top-center">
+                                    <md-card v-for="review in author.reviews">
+                                        <md-ripple>
+                                            <md-card-header>
+                                                <div class="md-title">{{ review.anime_title }}</div>
+                                                <div class="md-subhead">于{{ review.mtime }}发布</div>
+                                            </md-card-header>
 
+                                            <md-card-content>
+                                                <div v-if="review.is_long">{{ review.title }}</div>
+                                                <div v-else>{{ review.content }}</div>
+                                                <div class="md-layout md-gutter md-alignment-center-space-between">
+                                                    <div>
+                                                        <md-icon>favorite</md-icon> {{ review.likes }}
+                                                    </div>
+                                                    <div>
+                                                        <span class="md-display-1">{{ review.score }}</span>
+                                                    </div>
+                                                </div>
+                                            </md-card-content>
+
+                                            <md-card-expand v-if="review.is_long">
+                                                <md-card-actions md-alignment="space-between">
+                                                    <div>
+                                                        <md-button v-if="review.is_origin">原创内容</md-button>
+                                                        <md-button v-if="review.is_spoiler">包含剧透</md-button>
+                                                    </div>
+
+                                                    <md-card-expand-trigger>
+                                                        <md-button class="md-icon-button">
+                                                            <md-icon>keyboard_arrow_down</md-icon>
+                                                        </md-button>
+                                                    </md-card-expand-trigger>
+                                                </md-card-actions>
+
+                                                <md-card-expand-content>
+                                                    <md-card-content>{{ review.content }}</md-card-content>
+                                                </md-card-expand-content>
+                                            </md-card-expand>
+                                        </md-ripple>
+                                    </md-card>
+                                </div>
+                            </div>
+                            <div v-if="author.top_matches" class="bangumi-content">
+                                <span class="md-title">相似用户</span>
+                                <div class="bangumi-content md-layout md-gutter md-alignment-top-center">
+                                    <md-card md-with-hover v-for="other in author.top_matches" class="md-layout-item md-medium-size-96 md-large-size-24">
+                                        <md-ripple>
+                                            <md-card-header>
+                                                <div class="md-title">{{ other.uname }}</div>
+                                            </md-card-header>
+                                            <md-card-actions>
+                                                <md-button @click="applyAuthor(other.mid)">查看用户</md-button>
+                                            </md-card-actions>
+                                        </md-ripple>
+                                    </md-card>
+                                </div>
+                            </div>
+                            <div class="bangumi-content">
+                                <span class="md-title">推荐番剧</span>
+                                <div class="bangumi-content md-layout md-gutter md-alignment-top-center">
+                                    <md-card md-with-hover v-for="anime in author.recommendation" class="md-layout-item md-medium-size-96 md-large-size-24">
+                                        <md-ripple>
+                                            <md-card-header>
+                                                <div class="md-title">{{ anime.title }}</div>
+                                                <div v-if="anime.rating" class="md-subhead">{{ anime.rating.score }}</div>
+                                            </md-card-header>
+
+                                            <md-card-content>{{ anime.evaluate | filter_slice }}</md-card-content>
+
+                                            <md-card-actions>
+                                                <md-button @click="applyAnime(anime.season_id)">查看番剧</md-button>
+                                            </md-card-actions>
+                                        </md-ripple>
+                                    </md-card>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div v-if="page === 2" class="md-layout md-gutter">
-                        <div class="bangumi-content">
-                            <span class="md-display-2">{{ author.uname }}</span>
-                        </div>
-                        <div class="bangumi-content">
-                            <div>
-                                <span>最后爬取时间：{{ anime.last_crawl }}</span>
-                            </div>
-                            <div>
-                                <span>最后计算时间：{{ anime.last_analyze }}</span>
-                            </div>
-                        </div>
+
                     </div>
                 </md-app-content>
             </md-app>

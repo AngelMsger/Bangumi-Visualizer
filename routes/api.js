@@ -17,13 +17,13 @@ router.get('/anime/media_id/:media_id', function(req, res) {
     });
 });
 
-router.get('/authors/mid/:mid', function (req, res) {
+router.get('/author/mid/:mid', function (req, res) {
    db.authors.findOne({mid: req.params.mid}, function (error, author) {
        if (error === null) res.send(JSON.stringify(author));
    });
 });
 
-router.get('/archives/season_id/:season_id', function (req, res) {
+router.get('/archive/season_id/:season_id', function (req, res) {
     db.archives.aggregate([{$replaceRoot: {newRoot: {$mergeObjects: [{date: '$date'}, {$arrayElemAt: [{$filter:{input:
                                     '$archives', cond: {$eq: ['$$this.season_id', req.params.season_id]}}}, 0]}]}}}],
         function (error, archives) {

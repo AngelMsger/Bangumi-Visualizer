@@ -82,28 +82,19 @@ let vm = new Vue({
                                 let other = response.body;
                                 other.similarity = pair.similarity;
                                 that.anime.top_matches.push(other)
-                            }, response => {
-                            });
+                            }, response => {});
                         });
                     }
-
-                    // this.$http.get('/api/archives/season_id/' + this.season_id).then(response => {
-                    //     that.anime.archives = response.body;
-                    // }, response => {
-                    //     that.anime.archives = [];
-                    // });
                 }
             }, response => {
                 this.anime.success = false;
             });
         },
         mid: function () {
-            this.$http.get('/api/authors/mid/' + this.mid).then(response => {
+            this.$http.get('/api/author/mid/' + this.mid).then(response => {
                 let author = response.body;
                 if (author && typeof author !== 'string') {
-                    console.log('author got success');
                     this.author.success = true;
-                    this.author.reviews = author.reviews;
                     this.author.uname = author.uname;
                     this.author.follow = author.follow;
                     this.author.last_crawl = author.last_crawl;
@@ -111,15 +102,27 @@ let vm = new Vue({
 
                     const that = this;
 
+                    while (this.author.reviews.length > 0) this.author.reviews.pop();
+                    if (author.reviews) {
+                        author.reviews.forEach(function (review) {
+                            that.$http.get('/api/anime/media_id/' + review.media_id).then(response => {
+                                let anime = response.body;
+                                if (anime && typeof anime !== 'string') {
+                                    review.anime_title = anime.title;
+                                    that.author.reviews.push(review);
+                                }
+                            }, response => {});
+                        });
+                    }
+
                     while (this.author.top_matches.length > 0) this.author.top_matches.pop();
                     if (author.top_matches) {
                         author.top_matches.forEach(function (pair) {
-                            that.$http.get('/api/authors/mid/' + pair.mid).then(response => {
+                            that.$http.get('/api/author/mid/' + pair.mid).then(response => {
                                 let other = response.body;
                                 other.similarity = pair.similarity;
                                 that.author.top_matches.push(other)
-                            }, response => {
-                            });
+                            }, response => {});
                         });
                     }
 
@@ -128,8 +131,7 @@ let vm = new Vue({
                         author.recommendation.forEach(function (media_id) {
                             that.$http.get('/api/anime/media_id/' + media_id).then(response => {
                                 that.author.recommendation.push(response.body)
-                            }, response => {
-                            });
+                            }, response => {});
                         });
                     }
                 }
@@ -139,9 +141,20 @@ let vm = new Vue({
         },
     },
     methods: {
+        switchPage: function (index) {
+            this.page = index;
+            this.menuVisible = false;
+        },
         applyAnime: function (season_id) {
             this.season_id = season_id;
             this.page = 0;
+        },
+        applyAuthor: function (mid) {
+            this.mid = mid;
+            this.page = 1;
         }
+    },
+    created: function () {
+        document.getElementById('app').style.visibility = 'visible';
     }
 });
