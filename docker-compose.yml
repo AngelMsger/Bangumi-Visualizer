@@ -1,0 +1,14 @@
+version: '3'
+services:
+  crawler:
+    build: .
+    image: bangumi-visualizer
+    environment:
+      - DB_HOST=mongo
+      - REDIS_HOST=redis
+    ports:
+      - 1801:3000
+  mongo:
+    image: 'mongo'
+  redis:
+    image: 'redis'
