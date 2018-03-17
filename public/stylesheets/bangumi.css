@@ -21,6 +21,14 @@
     margin: 0;
 }
 
+.bangumi-sidebar-header {
+    background: url('https://blog.angelmsger.com/img/sidebar_header.png') no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: 100%;
+}
+
 .bangumi-content {
     margin: 8px 0;
     padding: 8px;
@@ -28,4 +36,12 @@
 
 .bangumi-placeholder {
     height: 512px;
+}
+
+.bangumi-avatar {
+    margin: 16px;
+    max-width: 256px;
+    max-height: 256px;
+    border-radius:25px;
+    -moz-border-radius:25px;
 }

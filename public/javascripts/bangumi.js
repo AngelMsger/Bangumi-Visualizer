@@ -155,6 +155,7 @@ let vm = new Vue({
         }
     },
     created: function () {
+        console.log('success');
         document.getElementById('app').style.visibility = 'visible';
     }
 });

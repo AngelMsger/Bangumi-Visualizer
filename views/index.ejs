@@ -21,10 +21,16 @@
                     <span class="md-title">Bangumi</span>
                 </md-app-toolbar>
                 <md-app-drawer :md-active.sync="menuVisible" class="md-scrollbar">
-                    <md-toolbar class="md-transparent" md-elevation="0">
-                        <span class="md-title">Bangumi</span>
+                    <md-toolbar class="bangumi-sidebar-header md-transparent" md-elevation="0">
+                        <div class="bangumi-content">
+                            <md-avatar class="md-large">
+                                <img src="https://avatars2.githubusercontent.com/u/16668566?s=460&v=4" alt="AngelMsger">
+                            </md-avatar>
+                        </div>
+                        <div class="bangumi-content">
+                            <span class="md-subheading"><a href="https://angelmsger.com" style="text-decoration: none;color: #666666">i@AngelMsger.Com</a></span>
+                        </div>
                     </md-toolbar>
-
                     <md-list>
                         <md-list-item @click="switchPage(0)">
                             <md-icon>play_circle_filled</md-icon>
@@ -98,7 +104,7 @@
                         </div>
                     </div>
 
-                    <div v-if="page === 1" class="md-layout md-gutter">
+                    <div v-if="page === 1">
                         <md-field>
                             <label>MID</label>
                             <md-input v-model="mid"></md-input>
@@ -195,9 +201,36 @@
                             </div>
                         </div>
                     </div>
-
-                    <div v-if="page === 2" class="md-layout md-gutter">
-
+                    <div v-if="page === 2">
+                        <div class="bangumi-content md-layout md-gutter md-alignment-top-space-between">
+                            <div class="bangumi-content">
+                                <div class="bangumi-content">
+                                    <span class="md-display-2">AngelMsger</span>
+                                </div>
+                                <div class="bangumi-content">
+                                    <md-icon>code</md-icon>
+                                    欢迎访问我的<span><a href="https://angelmsger.com" style="text-decoration: none; color: #666666">主页</a></span>与<span><a href="https://github.com/AngelMsger" style="text-decoration: none; color: #666666">GitHub页面</a></span>。
+                                </div>
+                                <div class="bangumi-content">
+                                    <md-icon>bug_report</md-icon>
+                                    <span><a href="https://github.com/AngelMsger/Bangumi-Visualizer" style="text-decoration: none; color: #666666">AngelMsger/Bangumi-Visualizer</a></span>同样在GitHub上托管，请以提交Issue的方式反馈Bug。
+                                </div>
+                                <div class="bangumi-content">
+                                    <md-icon>email</md-icon>
+                                    本人即将毕业，正在寻求一份工作，如果您有建议，请通过<span><a href="mailto:i@angelmsger.com" style="text-decoration: none; color: #666666">i@AngelMsger.Com</a></span>与我联系。
+                                </div>
+                                <div class="bangumi-content">
+                                    <md-icon>all_inclusive</md-icon>
+                                    本项目依赖<span><a href="https://github.com/AngelMsger/Bangumi-Provider" style="text-decoration: none; color: #666666">AngelMsger/Bangumi-Provider</a></span>提供的数据。
+                                </div>
+                            </div>
+                            <div class="bangumi-content">
+                                <img src="https://avatars2.githubusercontent.com/u/16668566?s=460&v=4" alt="AngelMsger" class="bangumi-avatar">
+                                <div>
+                                    <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28891492&auto=1&height=66"></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </md-app-content>
             </md-app>
