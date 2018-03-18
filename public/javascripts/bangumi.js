@@ -1,3 +1,42 @@
+function LineChartOption(title, xAxisData, seriesData) {
+    this.title = {
+        text: title
+    };
+    this.xAxis = {
+        data: xAxisData
+    };
+    this.yAxis = {
+        type: 'value'
+    };
+    this.series = {
+        type: 'line',
+        data: seriesData
+    };
+}
+
+function updateAnimeArchiveCharts(vueInstance) {
+    if (vueInstance.anime.archives) {
+        let favoritesChart = echarts.init(document.getElementById('favorites-chart'));
+        let danmakuChart = echarts.init(document.getElementById('danmaku-chart'));
+        let reviewsChart = echarts.init(document.getElementById('reviews-chart'));
+
+        let dates = [];
+        let favorites = [];
+        let danmaku = [];
+        let reviews = [];
+        vueInstance.anime.archives.forEach(function (archive) {
+            dates.push(moment(archive.date).format('LL'));
+            favorites.push(archive.favorites);
+            danmaku.push(archive.danmaku_count);
+            reviews.push(archive.reviews_count);
+        });
+
+        favoritesChart.setOption(new LineChartOption('追番人数', dates, favorites));
+        danmakuChart.setOption(new LineChartOption('弹幕数量', dates, danmaku));
+        reviewsChart.setOption(new LineChartOption('评论人数', dates, reviews));
+    }
+}
+
 Vue.use(VueMaterial.default);
 
 Vue.filter('filter_slice', function (value) {
@@ -41,7 +80,8 @@ let vm = new Vue({
             last_analyze: null,
             top_matches: [],
             recommendation: []
-        }
+        },
+        charts: {}
     },
     watch: {
         season_id: function () {
@@ -56,7 +96,7 @@ let vm = new Vue({
                         this.anime.evaluate = anime.evaluate;
                         this.anime.favorites = anime.favorites;
                         this.anime.is_finish = anime.is_finish;
-                        this.anime.pub_time = anime.pub_time;
+                        this.anime.pub_time = moment(anime.pub_time).format('LL');
                         this.anime.rating = anime.rating;
                         this.anime.title = anime.title;
 
@@ -82,15 +122,21 @@ let vm = new Vue({
                                 that.$http.get('/api/anime/media_id/' + pair.media_id).then(response => {
                                     let other = response.body;
                                     other.similarity = pair.similarity;
-                                    that.anime.top_matches.push(other)
+                                    that.anime.top_matches.push(other);
                                 }, response => {
                                 });
                             });
                         }
 
                         this.$http.get('/api/archive/season_id/' + this.season_id).then(response => {
+                            while (that.anime.archives.length > 0) that.anime.archives.pop();
                             let archives = response.body;
-                            console.log(archives);
+                            if (archives && typeof archives !== 'string') {
+                                archives.forEach(function (archive) {
+                                    that.anime.archives.push(archive);
+                                });
+                                updateAnimeArchiveCharts(that);
+                            }
                         }, response => {});
                     }
                 }, response => {
@@ -106,8 +152,18 @@ let vm = new Vue({
                         this.author.success = true;
                         this.author.uname = author.uname;
                         this.author.follow = author.follow;
-                        this.author.last_crawl = author.last_crawl;
-                        this.author.last_analyze = author.last_analyze;
+                        if (author.last_crawl) {
+                            this.author.last_crawl = moment(author.last_crawl).format('LLL');
+                        }
+                        else {
+                            this.author.last_crawl = null;
+                        }
+                        if (author.last_analyze) {
+                            this.author.last_analyze = moment(author.last_analyze).format('LLL');
+                        }
+                        else {
+                            this.author.last_analyze = null;
+                        }
 
                         const that = this;
 
@@ -118,6 +174,8 @@ let vm = new Vue({
                                     let anime = response.body;
                                     if (anime && typeof anime !== 'string') {
                                         review.anime_title = anime.title;
+                                        review.ctime = moment(review.ctime).format('LLL');
+                                        review.mtime = moment(review.mtime).format('LLL');
                                         that.author.reviews.push(review);
                                     }
                                 }, response => {
@@ -131,7 +189,7 @@ let vm = new Vue({
                                 that.$http.get('/api/author/mid/' + pair.mid).then(response => {
                                     let other = response.body;
                                     other.similarity = pair.similarity;
-                                    that.author.top_matches.push(other)
+                                    that.author.top_matches.push(other);
                                 }, response => {
                                 });
                             });
@@ -141,7 +199,7 @@ let vm = new Vue({
                         if (author.recommendation) {
                             author.recommendation.forEach(function (media_id) {
                                 that.$http.get('/api/anime/media_id/' + media_id).then(response => {
-                                    that.author.recommendation.push(response.body)
+                                    that.author.recommendation.push(response.body);
                                 }, response => {
                                 });
                             });
@@ -168,7 +226,6 @@ let vm = new Vue({
         }
     },
     created: function () {
-        console.log('success');
         document.getElementById('app').style.visibility = 'visible';
     }
 });
