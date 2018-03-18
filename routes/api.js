@@ -25,7 +25,7 @@ router.get('/author/mid/:mid', function (req, res) {
 
 router.get('/archive/season_id/:season_id', function (req, res) {
     db.archives.aggregate([{$replaceRoot: {newRoot: {$mergeObjects: [{date: '$date'}, {$arrayElemAt: [{$filter:{input:
-                                    '$archives', cond: {$eq: ['$$this.season_id', req.params.season_id]}}}, 0]}]}}}],
+                                    '$archives', cond: {$eq: ['$$this.season_id', Number(req.params.season_id)]}}}, 0]}]}}}],
         function (error, archives) {
         if (error === null) res.send(JSON.stringify(archives));
     });

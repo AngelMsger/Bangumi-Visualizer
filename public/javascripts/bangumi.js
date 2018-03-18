@@ -45,99 +45,112 @@ let vm = new Vue({
     },
     watch: {
         season_id: function () {
-            this.$http.get('/api/anime/season_id/' + this.season_id).then(response => {
-                let anime = response.body;
-                if (anime && typeof anime !== 'string') {
-                    this.anime.success = true;
-                    this.anime.alias = anime.alias;
-                    this.anime.danmaku_count = anime.danmaku_count;
-                    this.anime.episodes = anime.episodes;
-                    this.anime.evaluate = anime.evaluate;
-                    this.anime.favorites = anime.favorites;
-                    this.anime.is_finish = anime.is_finish;
-                    this.anime.pub_time = anime.pub_time;
-                    this.anime.rating = anime.rating;
-                    this.anime.title = anime.title;
+            if (this.season_id) {
+                this.$http.get('/api/anime/season_id/' + this.season_id).then(response => {
+                    let anime = response.body;
+                    if (anime && typeof anime !== 'string') {
+                        this.anime.success = true;
+                        this.anime.alias = anime.alias;
+                        this.anime.danmaku_count = anime.danmaku_count;
+                        this.anime.episodes = anime.episodes;
+                        this.anime.evaluate = anime.evaluate;
+                        this.anime.favorites = anime.favorites;
+                        this.anime.is_finish = anime.is_finish;
+                        this.anime.pub_time = anime.pub_time;
+                        this.anime.rating = anime.rating;
+                        this.anime.title = anime.title;
 
-                    const that = this;
+                        const that = this;
 
-                    while (this.anime.area.length > 0) this.anime.area.pop();
-                    if (anime.area) {
-                        anime.area.forEach(function (area) {
-                            that.anime.area.push(area.name);
-                        });
+                        while (this.anime.area.length > 0) this.anime.area.pop();
+                        if (anime.area) {
+                            anime.area.forEach(function (area) {
+                                that.anime.area.push(area.name);
+                            });
+                        }
+
+                        while (this.anime.tags.length > 0) this.anime.tags.pop();
+                        if (anime.tags) {
+                            anime.tags.forEach(function (tag) {
+                                that.anime.tags.push(tag.name);
+                            });
+                        }
+
+                        while (this.anime.top_matches.length > 0) this.anime.top_matches.pop();
+                        if (anime.top_matches) {
+                            anime.top_matches.forEach(function (pair) {
+                                that.$http.get('/api/anime/media_id/' + pair.media_id).then(response => {
+                                    let other = response.body;
+                                    other.similarity = pair.similarity;
+                                    that.anime.top_matches.push(other)
+                                }, response => {
+                                });
+                            });
+                        }
+
+                        this.$http.get('/api/archive/season_id/' + this.season_id).then(response => {
+                            let archives = response.body;
+                            console.log(archives);
+                        }, response => {});
                     }
-
-                    while (this.anime.tags.length > 0) this.anime.tags.pop();
-                    if (anime.tags) {
-                        anime.tags.forEach(function (tag) {
-                            that.anime.tags.push(tag.name);
-                        });
-                    }
-
-                    while (this.anime.top_matches.length > 0) this.anime.top_matches.pop();
-                    if (anime.top_matches) {
-                        anime.top_matches.forEach(function (pair) {
-                            that.$http.get('/api/anime/media_id/' + pair.media_id).then(response => {
-                                let other = response.body;
-                                other.similarity = pair.similarity;
-                                that.anime.top_matches.push(other)
-                            }, response => {});
-                        });
-                    }
-                }
-            }, response => {
-                this.anime.success = false;
-            });
+                }, response => {
+                    this.anime.success = false;
+                });
+            }
         },
         mid: function () {
-            this.$http.get('/api/author/mid/' + this.mid).then(response => {
-                let author = response.body;
-                if (author && typeof author !== 'string') {
-                    this.author.success = true;
-                    this.author.uname = author.uname;
-                    this.author.follow = author.follow;
-                    this.author.last_crawl = author.last_crawl;
-                    this.author.last_analyze = author.last_analyze;
+            if (this.mid) {
+                this.$http.get('/api/author/mid/' + this.mid).then(response => {
+                    let author = response.body;
+                    if (author && typeof author !== 'string') {
+                        this.author.success = true;
+                        this.author.uname = author.uname;
+                        this.author.follow = author.follow;
+                        this.author.last_crawl = author.last_crawl;
+                        this.author.last_analyze = author.last_analyze;
 
-                    const that = this;
+                        const that = this;
 
-                    while (this.author.reviews.length > 0) this.author.reviews.pop();
-                    if (author.reviews) {
-                        author.reviews.forEach(function (review) {
-                            that.$http.get('/api/anime/media_id/' + review.media_id).then(response => {
-                                let anime = response.body;
-                                if (anime && typeof anime !== 'string') {
-                                    review.anime_title = anime.title;
-                                    that.author.reviews.push(review);
-                                }
-                            }, response => {});
-                        });
+                        while (this.author.reviews.length > 0) this.author.reviews.pop();
+                        if (author.reviews) {
+                            author.reviews.forEach(function (review) {
+                                that.$http.get('/api/anime/media_id/' + review.media_id).then(response => {
+                                    let anime = response.body;
+                                    if (anime && typeof anime !== 'string') {
+                                        review.anime_title = anime.title;
+                                        that.author.reviews.push(review);
+                                    }
+                                }, response => {
+                                });
+                            });
+                        }
+
+                        while (this.author.top_matches.length > 0) this.author.top_matches.pop();
+                        if (author.top_matches) {
+                            author.top_matches.forEach(function (pair) {
+                                that.$http.get('/api/author/mid/' + pair.mid).then(response => {
+                                    let other = response.body;
+                                    other.similarity = pair.similarity;
+                                    that.author.top_matches.push(other)
+                                }, response => {
+                                });
+                            });
+                        }
+
+                        while (this.author.recommendation.length > 0) this.author.recommendation.pop();
+                        if (author.recommendation) {
+                            author.recommendation.forEach(function (media_id) {
+                                that.$http.get('/api/anime/media_id/' + media_id).then(response => {
+                                    that.author.recommendation.push(response.body)
+                                }, response => {
+                                });
+                            });
+                        }
                     }
-
-                    while (this.author.top_matches.length > 0) this.author.top_matches.pop();
-                    if (author.top_matches) {
-                        author.top_matches.forEach(function (pair) {
-                            that.$http.get('/api/author/mid/' + pair.mid).then(response => {
-                                let other = response.body;
-                                other.similarity = pair.similarity;
-                                that.author.top_matches.push(other)
-                            }, response => {});
-                        });
-                    }
-
-                    while (this.author.recommendation.length > 0) this.author.recommendation.pop();
-                    if (author.recommendation) {
-                        author.recommendation.forEach(function (media_id) {
-                            that.$http.get('/api/anime/media_id/' + media_id).then(response => {
-                                that.author.recommendation.push(response.body)
-                            }, response => {});
-                        });
-                    }
-                }
-            }, response => {
-                this.author.success = false;
-            });
+                }, response => {
+                    this.author.success = false;
+                });
+            }
         },
     },
     methods: {
