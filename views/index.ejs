@@ -101,7 +101,7 @@
                                         </md-card>
                                     </div>
                                 </div>
-                                <div class="bangumi-content md-layout md-gutter md-alignment-top-center">
+                                <div v-if="anime.archives" class="bangumi-content md-layout md-gutter md-alignment-top-center">
                                     <div id="favorites-chart" class="md-layout-item md-medium-size-96 md-large-size-24" style="height: 256px"></div>
                                     <div id="danmaku-chart" class="md-layout-item md-medium-size-96 md-large-size-24" style="height: 256px"></div>
                                     <div id="reviews-chart" class="md-layout-item md-medium-size-96 md-large-size-24" style="height: 256px"></div>
@@ -203,6 +203,9 @@
                                             </md-ripple>
                                         </md-card>
                                     </div>
+                                </div>
+                                <div v-if="author.reviews" class="bangumi-content">
+                                    <div id="tags-chart" style="height: 256px"></div>
                                 </div>
                             </div>
                         </div>

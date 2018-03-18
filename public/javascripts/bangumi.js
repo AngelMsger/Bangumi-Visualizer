@@ -14,27 +14,64 @@ function LineChartOption(title, xAxisData, seriesData) {
     };
 }
 
-function updateAnimeArchiveCharts(vueInstance) {
-    if (vueInstance.anime.archives) {
-        let favoritesChart = echarts.init(document.getElementById('favorites-chart'));
-        let danmakuChart = echarts.init(document.getElementById('danmaku-chart'));
-        let reviewsChart = echarts.init(document.getElementById('reviews-chart'));
-
-        let dates = [];
-        let favorites = [];
-        let danmaku = [];
-        let reviews = [];
-        vueInstance.anime.archives.forEach(function (archive) {
-            dates.push(moment(archive.date).format('LL'));
-            favorites.push(archive.favorites);
-            danmaku.push(archive.danmaku_count);
-            reviews.push(archive.reviews_count);
-        });
-
-        favoritesChart.setOption(new LineChartOption('追番人数', dates, favorites));
-        danmakuChart.setOption(new LineChartOption('弹幕数量', dates, danmaku));
-        reviewsChart.setOption(new LineChartOption('评论人数', dates, reviews));
-    }
+function PieChartOption(seriesData, title='用户偏好', seriesName='评论番剧携带标签') {
+    this.title = {
+        text: title,
+        left: 'center',
+        top: 20,
+        textStyle: {
+            color: '#ccc'
+        }
+    };
+    this.tooltip = {
+        trigger: 'item',
+        formatter: "{a} <br/>{b} : {c} ({d}%)"
+    };
+    this.visualMap = {
+        show: false,
+        min: 80,
+        max: 600,
+        inRange: {
+            colorLightness: [0, 1]
+        }
+    };
+    this.series = [{
+        name: seriesName,
+        type: 'pie',
+        radius: '55%',
+        center: ['50%', '50%'],
+        data:seriesData.sort(function (a, b) { return a.value - b.value; }),
+        roseType: 'radius',
+        label: {
+            normal: {
+                textStyle: {
+                    color: 'rgba(0, 0, 0, 0.3)'
+                }
+            }
+        },
+        labelLine: {
+            normal: {
+                lineStyle: {
+                    color: 'rgba(0, 0, 0, 0.3)'
+                },
+                smooth: 0.2,
+                length: 10,
+                length2: 20
+            }
+        },
+        itemStyle: {
+            normal: {
+                color: '#c23531',
+                shadowBlur: 200,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+        },
+        animationType: 'scale',
+        animationEasing: 'elasticOut',
+        animationDelay: function (idx) {
+            return Math.random() * 200;
+        }
+    }];
 }
 
 Vue.use(VueMaterial.default);
@@ -135,7 +172,6 @@ let vm = new Vue({
                                 archives.forEach(function (archive) {
                                     that.anime.archives.push(archive);
                                 });
-                                updateAnimeArchiveCharts(that);
                             }
                         }, response => {});
                     }
@@ -174,6 +210,7 @@ let vm = new Vue({
                                     let anime = response.body;
                                     if (anime && typeof anime !== 'string') {
                                         review.anime_title = anime.title;
+                                        review.anime_tags = anime.tags;
                                         review.ctime = moment(review.ctime).format('LLL');
                                         review.mtime = moment(review.mtime).format('LLL');
                                         that.author.reviews.push(review);
@@ -223,9 +260,65 @@ let vm = new Vue({
         applyAuthor: function (mid) {
             this.mid = mid;
             this.page = 1;
+        },
+        updateAnimeArchiveCharts: function() {
+            if (this.anime.archives) {
+                let favoritesChart = echarts.init(document.getElementById('favorites-chart'));
+                let danmakuChart = echarts.init(document.getElementById('danmaku-chart'));
+                let reviewsChart = echarts.init(document.getElementById('reviews-chart'));
+
+                let dates = [];
+                let favorites = [];
+                let danmaku = [];
+                let reviews = [];
+                this.anime.archives.forEach(function (archive) {
+                    dates.push(moment(archive.date).format('LL'));
+                    favorites.push(archive.favorites);
+                    danmaku.push(archive.danmaku_count);
+                    reviews.push(archive.reviews_count);
+                });
+
+                favoritesChart.setOption(new LineChartOption('追番人数', dates, favorites));
+                danmakuChart.setOption(new LineChartOption('弹幕数量', dates, danmaku));
+                reviewsChart.setOption(new LineChartOption('评论人数', dates, reviews));
+            }
+        },
+        updateAuthorReviewsTagsChart: function() {
+            if (this.author.reviews) {
+                let tagsChart = echarts.init(document.getElementById('tags-chart'));
+                let seriesData = [];
+                let tags_count = new Map();
+                this.author.reviews.forEach(function (review) {
+                    if (review.anime_tags) {
+                        review.anime_tags.forEach(function (pair) {
+                            if (tags_count.has(pair.name)) {
+                                tags_count.set(pair.name, tags_count.get(pair.name) + 1);
+                            }
+                            else {
+                                tags_count.set(pair.name, 1);
+                            }
+                        });
+                    }
+                });
+                tags_count.forEach(function (value, key, map) {
+                    seriesData.push({
+                        value: value,
+                        name: key
+                    });
+                });
+                tagsChart.setOption(new PieChartOption(seriesData));
+            }
         }
     },
     created: function () {
         document.getElementById('app').style.visibility = 'visible';
+    },
+    updated: function () {
+        if (this.page === 0 && this.anime.archives) {
+            this.updateAnimeArchiveCharts();
+        }
+        else if (this.page === 1 && this.author.reviews) {
+            this.updateAuthorReviewsTagsChart();
+        }
     }
 });
