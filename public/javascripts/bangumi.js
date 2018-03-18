@@ -263,50 +263,58 @@ let vm = new Vue({
         },
         updateAnimeArchiveCharts: function() {
             if (this.anime.archives) {
-                let favoritesChart = echarts.init(document.getElementById('favorites-chart'));
-                let danmakuChart = echarts.init(document.getElementById('danmaku-chart'));
-                let reviewsChart = echarts.init(document.getElementById('reviews-chart'));
+                let favoritesEl = document.getElementById('favorites-chart');
+                let danmakuEl = document.getElementById('danmaku-chart');
+                let reviewsEl = document.getElementById('reviews-chart');
+                if (favoritesEl && danmakuEl && reviewsEl) {
+                    let favoritesChart = echarts.init(favoritesEl);
+                    let danmakuChart = echarts.init(danmakuEl);
+                    let reviewsChart = echarts.init(reviewsEl);
 
-                let dates = [];
-                let favorites = [];
-                let danmaku = [];
-                let reviews = [];
-                this.anime.archives.forEach(function (archive) {
-                    dates.push(moment(archive.date).format('LL'));
-                    favorites.push(archive.favorites);
-                    danmaku.push(archive.danmaku_count);
-                    reviews.push(archive.reviews_count);
-                });
+                    let dates = [];
+                    let favorites = [];
+                    let danmaku = [];
+                    let reviews = [];
+                    this.anime.archives.forEach(function (archive) {
+                        dates.push(moment(archive.date).format('LL'));
+                        favorites.push(archive.favorites);
+                        danmaku.push(archive.danmaku_count);
+                        reviews.push(archive.reviews_count);
+                    });
 
-                favoritesChart.setOption(new LineChartOption('追番人数', dates, favorites));
-                danmakuChart.setOption(new LineChartOption('弹幕数量', dates, danmaku));
-                reviewsChart.setOption(new LineChartOption('评论人数', dates, reviews));
+                    favoritesChart.setOption(new LineChartOption('追番人数', dates, favorites));
+                    danmakuChart.setOption(new LineChartOption('弹幕数量', dates, danmaku));
+                    reviewsChart.setOption(new LineChartOption('评论人数', dates, reviews));
+                }
             }
         },
         updateAuthorReviewsTagsChart: function() {
             if (this.author.reviews) {
-                let tagsChart = echarts.init(document.getElementById('tags-chart'));
-                let seriesData = [];
-                let tags_count = new Map();
-                this.author.reviews.forEach(function (review) {
-                    if (review.anime_tags) {
-                        review.anime_tags.forEach(function (pair) {
-                            if (tags_count.has(pair.name)) {
-                                tags_count.set(pair.name, tags_count.get(pair.name) + 1);
-                            }
-                            else {
-                                tags_count.set(pair.name, 1);
-                            }
-                        });
-                    }
-                });
-                tags_count.forEach(function (value, key, map) {
-                    seriesData.push({
-                        value: value,
-                        name: key
+                let tagsEl = document.getElementById('tags-chart');
+                if (tagsEl) {
+                    let tagsChart = echarts.init(tagsEl);
+                    let seriesData = [];
+                    let tags_count = new Map();
+                    this.author.reviews.forEach(function (review) {
+                        if (review.anime_tags) {
+                            review.anime_tags.forEach(function (pair) {
+                                if (tags_count.has(pair.name)) {
+                                    tags_count.set(pair.name, tags_count.get(pair.name) + 1);
+                                }
+                                else {
+                                    tags_count.set(pair.name, 1);
+                                }
+                            });
+                        }
                     });
-                });
-                tagsChart.setOption(new PieChartOption(seriesData));
+                    tags_count.forEach(function (value, key, map) {
+                        seriesData.push({
+                            value: value,
+                            name: key
+                        });
+                    });
+                    tagsChart.setOption(new PieChartOption(seriesData));
+                }
             }
         }
     },
