@@ -1,3 +1,7 @@
+let conf = {
+    apiPrefix: 'http://api.angelmsger.com/bangumi'
+};
+
 function LineChartOption(title, xAxisData, seriesData) {
     this.title = {
         text: title

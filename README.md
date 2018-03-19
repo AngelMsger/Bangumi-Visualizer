@@ -4,11 +4,14 @@
 Bangumi-Visualizer is a visual frontend demo for data provided by [Bangumi-Provider](https://github.com/AngelMsger/Bangumi-Provider). Bangumi-Visualizer only support data in mongodb while multi storage backend is supported by Bangumi-Provider.
 
 ## Features
-* Lightweight with Node.js & Express.
-* Implement [SPA](https://www.wikiwand.com/en/Single-page_application) Simply with Vue.js.
-* Support Data visualization with Echarts.
 
-## Need Help(Solved)
+### Completely Split the Frontend and Backend Components.
+* Lightweight API Backend with Node.js & Express.
+* Implement [SPA](https://www.wikiwand.com/en/Single-page_application) Frontend Simply with Vue.js.
+
+### Data Visualization with Echarts.
+
+## ~~Need Help~~(Solved)
 
 ### Question:
 I use following code to query anime's archive in mongodb by its season_id:
