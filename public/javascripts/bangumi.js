@@ -17,61 +17,66 @@ function LineChartOption(title, xAxisData, seriesData) {
 function PieChartOption(seriesData, title='用户偏好', seriesName='评论番剧携带标签') {
     this.title = {
         text: title,
-        left: 'center',
-        top: 20,
-        textStyle: {
-            color: '#ccc'
+            left: 'center',
+            top: 20,
+            textStyle: {
+            color: '#000'
         }
     };
+
     this.tooltip = {
         trigger: 'item',
         formatter: "{a} <br/>{b} : {c} ({d}%)"
     };
+
     this.visualMap = {
         show: false,
-        min: 80,
-        max: 600,
-        inRange: {
+            min: 0,
+            max: 16,
+            inRange: {
             colorLightness: [0, 1]
         }
     };
-    this.series = [{
-        name: seriesName,
-        type: 'pie',
-        radius: '55%',
-        center: ['50%', '50%'],
-        data:seriesData.sort(function (a, b) { return a.value - b.value; }),
-        roseType: 'radius',
-        label: {
-            normal: {
-                textStyle: {
-                    color: 'rgba(0, 0, 0, 0.3)'
+    this.series = [
+        {
+            name: seriesName,
+            type: 'pie',
+            radius : '55%',
+            center: ['50%', '50%'],
+            data: seriesData.sort(function (a, b) { return a.value - b.value; }),
+            roseType: 'radius',
+            label: {
+                normal: {
+                    textStyle: {
+                        color: 'rgba(0, 0, 0, 0.3)'
+                    }
                 }
+            },
+            labelLine: {
+                normal: {
+                    lineStyle: {
+                        color: 'rgba(0, 0, 0, 0.3)'
+                    },
+                    smooth: 0.2,
+                    length: 10,
+                    length2: 20
+                }
+            },
+            itemStyle: {
+                normal: {
+                    color: '#c23531',
+                    shadowBlur: 200,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDelay: function (idx) {
+                return Math.random() * 200;
             }
-        },
-        labelLine: {
-            normal: {
-                lineStyle: {
-                    color: 'rgba(0, 0, 0, 0.3)'
-                },
-                smooth: 0.2,
-                length: 10,
-                length2: 20
-            }
-        },
-        itemStyle: {
-            normal: {
-                color: '#c23531',
-                shadowBlur: 200,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-        },
-        animationType: 'scale',
-        animationEasing: 'elasticOut',
-        animationDelay: function (idx) {
-            return Math.random() * 200;
         }
-    }];
+    ];
 }
 
 Vue.use(VueMaterial.default);
@@ -118,7 +123,12 @@ let vm = new Vue({
             top_matches: [],
             recommendation: []
         },
-        charts: {}
+        charts: {
+            archivesToLoad: 0,
+            archivesRenderFinished: false,
+            reviewsToLoad: 0,
+            tagsRenderFinished: false,
+        }
     },
     watch: {
         season_id: function () {
@@ -165,15 +175,18 @@ let vm = new Vue({
                             });
                         }
 
+                        while (that.anime.archives.length > 0) that.anime.archives.pop();
                         this.$http.get('/api/archive/season_id/' + this.season_id).then(response => {
-                            while (that.anime.archives.length > 0) that.anime.archives.pop();
                             let archives = response.body;
                             if (archives && typeof archives !== 'string') {
+                                this.charts.archivesToLoad = archives.length;
+                                this.charts.archivesRenderFinished = false;
                                 archives.forEach(function (archive) {
                                     that.anime.archives.push(archive);
                                 });
                             }
-                        }, response => {});
+                        }, response => {
+                        });
                     }
                 }, response => {
                     this.anime.success = false;
@@ -205,6 +218,8 @@ let vm = new Vue({
 
                         while (this.author.reviews.length > 0) this.author.reviews.pop();
                         if (author.reviews) {
+                            that.charts.reviewsToLoad = author.reviews.length;
+                            that.charts.tagsRenderFinished = false;
                             author.reviews.forEach(function (review) {
                                 that.$http.get('/api/anime/media_id/' + review.media_id).then(response => {
                                     let anime = response.body;
@@ -322,11 +337,15 @@ let vm = new Vue({
         document.getElementById('app').style.visibility = 'visible';
     },
     updated: function () {
-        if (this.page === 0 && this.anime.archives) {
+        if (this.page === 0 && this.anime.archives && this.anime.archives.length === this.charts.archivesToLoad
+            && !this.charts.archivesRenderFinished) {
             this.updateAnimeArchiveCharts();
+            this.charts.archivesRenderFinished = true;
         }
-        else if (this.page === 1 && this.author.reviews) {
+        else if (this.page === 1 && this.author.reviews && this.author.reviews.length === this.charts.reviewsToLoad
+            && !this.charts.tagsRenderFinished) {
             this.updateAuthorReviewsTagsChart();
+            this.charts.tagsRenderFinished = true;
         }
     }
 });
