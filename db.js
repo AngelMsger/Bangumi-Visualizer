@@ -80,6 +80,11 @@ module.exports.authors = authors;
 module.exports.archives = archives;
 
 let client = redis.createClient(conf.redisUrl);
-client.set('MAXMEMORY', conf.redisMaxMemory);
+
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
+
+client.config('SET', 'MAXMEMORY', conf.redisMaxMemory);
 
 module.exports.redis = client;

@@ -11,7 +11,7 @@ const redisMaxMemory = process.env.REDIS_MAXMEMORY || '1024mb';
 const redisKVTTL = process.env.REDIS_KV_TTL || 43200;
 
 const dev = {
-    root: '/bangumi',
+    root: '/',
     mongoUrl: 'mongodb://localhost/bangumi',
 
     redisUrl: 'redis://localhost/0',
@@ -20,6 +20,7 @@ const dev = {
 };
 
 prod = {
+    root: '/bangumi',
     mongoUrl: 'mongodb://' + dbUsername + ':' + dbPassword + '@' + dbHost + ':' + dbPort + '/' + dbDatabase,
 
     redisUrl: 'redis://' + redisHost + ':' + redisPort + '/' + redisDatabase,

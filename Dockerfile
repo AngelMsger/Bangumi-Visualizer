@@ -8,4 +8,4 @@ WORKDIR /app
 
 RUN npm install --save
 
-CMD ["node", "app.js"]
+CMD ["node", "bin/www"]

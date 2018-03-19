@@ -11,6 +11,16 @@ Bangumi-Visualizer is a visual frontend demo for data provided by [Bangumi-Provi
 
 ### Data Visualization with Echarts.
 
+## Usage
+1. Make Sure Your Data Source(Data in MongoDB Provided by [Bangumi-Provider](https://github.com/AngelMsger/Bangumi-Provider)).
+2. Update `conf.js` and Run `npm install && node bin/www` to Set up API Server.
+3. Copy Files `dist/*` to Your Web Server(eg. Nginx) Root.
+4. Update `apiPrefix` in `js/bangumi.js` to Your API Server URL.
+
+## API Response Example
+
+### Anime Information
+
 ## ~~Need Help~~(Solved)
 
 ### Question:
