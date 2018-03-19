@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/bangumi');
+const redis = require('redis');
 
-var Schema = mongoose.Schema;
+const conf = require('./conf');
+
+mongoose.connect(conf.mongoUrl);
+
+let Schema = mongoose.Schema;
 
 const animes = mongoose.model('animes', new Schema({
     season_id: Number,
@@ -74,3 +78,8 @@ const archives = mongoose.model('archives', new Schema({
 module.exports.animes = animes;
 module.exports.authors = authors;
 module.exports.archives = archives;
+
+let client = redis.createClient(conf.redisUrl);
+client.set('MAXMEMORY', conf.redisMaxMemory);
+
+module.exports.redis = client;
