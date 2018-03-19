@@ -1,7 +1,7 @@
-var express = require('express');
-var db = require('../db');
+let express = require('express');
+let db = require('../db');
 
-var router = express.Router();
+let router = express.Router();
 
 /* GET api listing. */
 router.get('/anime/season_id/:season_id', function(req, res) {
