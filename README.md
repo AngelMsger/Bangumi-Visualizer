@@ -1,13 +1,21 @@
 # Bangumi-Visualizer
+[![Build Status](https://travis-ci.org/AngelMsger/Bangumi-Visualizer.svg?branch=master)](https://travis-ci.org/AngelMsger/Bangumi-Visualizer)
+![](dist/img/ic_laoding_anim_01.png)
 
 ## Overview
 Bangumi-Visualizer is a visual frontend demo for data provided by [Bangumi-Provider](https://github.com/AngelMsger/Bangumi-Provider). Bangumi-Visualizer only support data in mongodb while multi storage backend is supported by Bangumi-Provider.
+
+[Demo](https://projects.angelmsger.com/bangumi)
+
+![](dist/img/screenshot_0.png)
+![](dist/img/screenshot_1.png)
+![](dist/img/screenshot_2.png)
 
 ## Features
 
 ### Completely Split the Frontend and Backend Components.
 * Lightweight API Backend with Node.js & Express.
-* Implement [SPA](https://www.wikiwand.com/en/Single-page_application) Frontend Simply with Vue.js.
+* Implement [SPA](https://www.wikiwand.com/en/Single-page_application) Frontend Simply with Vue.js, Async Load Resource of Full Page.
 
 ### Data Visualization with Echarts.
 
