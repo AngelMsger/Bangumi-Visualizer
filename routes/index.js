@@ -26,7 +26,7 @@ router.get('/anime/season_id/:season_id', function(req, res) {
 });
 
 router.get('/anime/media_id/:media_id', function(req, res) {
-    const mediaId = parseInt(req.params.season_id);
+    const mediaId = parseInt(req.params.media_id);
     if (mediaId) {
         const key = 'anime-media-id:' + mediaId;
         db.redis.get(key, function (error, value) {

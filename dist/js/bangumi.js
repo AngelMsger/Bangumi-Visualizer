@@ -1,6 +1,11 @@
-let conf = {
-    apiPrefix: 'http://api.angelmsger.com/bangumi'
+const conf = {
+    apiPrefix: 'https://api.angelmsger.com/bangumi',
 };
+
+conf.animeBySeasonIdURLPrefix = conf.apiPrefix + '/anime/season_id/';
+conf.animeByMediaIdURLPrefix = conf.apiPrefix + '/anime/media_id/';
+conf.authorByMidURLPrefix = conf.apiPrefix + '/author/mid/';
+conf.archiveBySeasonIdURLPrefix = conf.apiPrefix + '/archive/season_id/';
 
 function LineChartOption(title, xAxisData, seriesData) {
     this.title = {
@@ -137,7 +142,7 @@ let vm = new Vue({
     watch: {
         season_id: function () {
             if (this.season_id) {
-                this.$http.get('/api/anime/season_id/' + this.season_id).then(response => {
+                this.$http.get(conf.animeBySeasonIdURLPrefix + this.season_id).then(response => {
                     let anime = response.body;
                     if (anime && typeof anime !== 'string') {
                         this.anime.success = true;
@@ -170,7 +175,7 @@ let vm = new Vue({
                         while (this.anime.top_matches.length > 0) this.anime.top_matches.pop();
                         if (anime.top_matches) {
                             anime.top_matches.forEach(function (pair) {
-                                that.$http.get('/api/anime/media_id/' + pair.media_id).then(response => {
+                                that.$http.get(conf.animeByMediaIdURLPrefix + pair.media_id).then(response => {
                                     let other = response.body;
                                     other.similarity = pair.similarity;
                                     that.anime.top_matches.push(other);
@@ -180,7 +185,7 @@ let vm = new Vue({
                         }
 
                         while (that.anime.archives.length > 0) that.anime.archives.pop();
-                        this.$http.get('/api/archive/season_id/' + this.season_id).then(response => {
+                        this.$http.get(conf.archiveBySeasonIdURLPrefix + this.season_id).then(response => {
                             let archives = response.body;
                             if (archives && typeof archives !== 'string') {
                                 this.charts.archivesToLoad = archives.length;
@@ -199,7 +204,7 @@ let vm = new Vue({
         },
         mid: function () {
             if (this.mid) {
-                this.$http.get('/api/author/mid/' + this.mid).then(response => {
+                this.$http.get(conf.authorByMidURLPrefix + this.mid).then(response => {
                     let author = response.body;
                     if (author && typeof author !== 'string') {
                         this.author.success = true;
@@ -225,7 +230,7 @@ let vm = new Vue({
                             that.charts.reviewsToLoad = author.reviews.length;
                             that.charts.tagsRenderFinished = false;
                             author.reviews.forEach(function (review) {
-                                that.$http.get('/api/anime/media_id/' + review.media_id).then(response => {
+                                that.$http.get(conf.animeByMediaIdURLPrefix + review.media_id).then(response => {
                                     let anime = response.body;
                                     if (anime && typeof anime !== 'string') {
                                         review.anime_title = anime.title;
@@ -242,7 +247,7 @@ let vm = new Vue({
                         while (this.author.top_matches.length > 0) this.author.top_matches.pop();
                         if (author.top_matches) {
                             author.top_matches.forEach(function (pair) {
-                                that.$http.get('/api/author/mid/' + pair.mid).then(response => {
+                                that.$http.get(conf.authorByMidURLPrefix + pair.mid).then(response => {
                                     let other = response.body;
                                     other.similarity = pair.similarity;
                                     that.author.top_matches.push(other);
@@ -254,7 +259,7 @@ let vm = new Vue({
                         while (this.author.recommendation.length > 0) this.author.recommendation.pop();
                         if (author.recommendation) {
                             author.recommendation.forEach(function (media_id) {
-                                that.$http.get('/api/anime/media_id/' + media_id).then(response => {
+                                that.$http.get(conf.animeByMediaIdURLPrefix + media_id).then(response => {
                                     that.author.recommendation.push(response.body);
                                 }, response => {
                                 });
