@@ -28,4 +28,4 @@ prod = {
     redisKVTTL: redisKVTTL
 };
 
-module.exports = prod;
+module.exports = dev;

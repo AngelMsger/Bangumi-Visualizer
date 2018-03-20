@@ -68,14 +68,14 @@
                                     <div class="bangumi-content">
                                         <div v-if="anime.rating">
                                             <span class="md-display-2">{{ anime.rating.score }}</span>
-                                            <span >来自 {{ anime.rating.count }} 位用户</span>
+                                            <span >评分来自{{ anime.rating.count }}位用户</span>
                                         </div>
-                                        <span>共 {{ anime.episodes }} 集</span>
+                                        <span>共{{ anime.episodes }}集</span>
                                         <span v-if="anime.is_finish">已完结</span>
                                         <span v-else>连载中</span>
-                                        <span>弹幕数量：{{ anime.danmaku_count }}</span>
-                                        <span>{{ anime.favorites }} 人追番</span>
-                                        <span>发布时间：{{ anime.pub_time }}</span>
+                                        <span>{{ anime.danmaku_count }}条弹幕</span>
+                                        <span>{{ anime.favorites }}人追番</span>
+                                        <span>于{{ anime.pub_time }}发布</span>
                                     </div>
                                 </div>
                                 <div class="bangumi-content md-layout md-gutter">
@@ -121,8 +121,8 @@
                                         <span class="md-display-2">{{ author.uname }}</span>
                                     </div>
                                     <div class="bangumi-content">
-                                        <span>最后爬取时间：{{ author.last_crawl }}</span>
-                                        <span>最后计算时间：{{ author.last_analyze }}</span>
+                                        <span v-if="author.last_crawl">于{{ author.last_crawl }}最后爬取</span>
+                                        <span v-if="author.last_analyze">于{{ author.last_analyze }}最后计算</span>
                                     </div>
                                 </div>
                                 <div class="bangumi-content">
@@ -235,7 +235,7 @@
                                 <div class="bangumi-content">
                                     <img src="https://avatars2.githubusercontent.com/u/16668566?s=460&v=4" alt="AngelMsger" class="bangumi-avatar">
                                     <div>
-                                        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28891492&auto=1&height=66"></iframe>
+                                        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28364361&auto=1&height=66"></iframe>
                                     </div>
                                 </div>
                             </div>

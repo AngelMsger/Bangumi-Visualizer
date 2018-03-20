@@ -1,5 +1,5 @@
 const conf = {
-    apiPrefix: 'https://api.angelmsger.com/bangumi',
+    apiPrefix: 'https://api.angelmsger.com/bangumi'
 };
 
 conf.animeBySeasonIdURLPrefix = conf.apiPrefix + '/anime/season_id/';
